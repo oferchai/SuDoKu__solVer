@@ -307,8 +307,15 @@ namespace SKvisual
 
             for (int i = 0; i < difficultyLevel*10; i++)
             {
-                int loc = r.Next(0, 80);
-                sk.AllSingles.ElementAt(loc).Number = -1;
+                do
+                {
+                    int loc = r.Next(0, 80);
+                    if (sk.AllSingles.ElementAt(loc).Number != -1)
+                    {
+                        sk.AllSingles.ElementAt(loc).Number = -1;
+                        break;
+                    }
+                } while (true);
             }
 
 

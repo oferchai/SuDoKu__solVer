@@ -115,20 +115,21 @@ namespace SK
 
             foreach (var vector in v2)
             {
+                highlight(vector.JoinSingles.First(), funcDescription + ":" + vector.NumbersKey, collection);
+                waitForUser();
+
                 foreach (var single in vector.JoinSingles)
                 {
-                    highlight(single, funcDescription + ":" + vector.NumbersKey, collection);
-                    changed.Add(single);
-                    waitForUser();
+                    changed.Add(single);                    
                     if (!single.RemoveAllExcept(vector.Numbers))
                         changed.RemoveAt(changed.Count - 1);
 
                 }
                 foreach (var single in collection.Where(s => !s.IsNumberSet && !vector.JoinSingles.Contains(s)))
                 {
-                    highlight(single, funcDescription + ":" + vector.NumbersKey, collection);
+                    //highlight(single, funcDescription + ":" + vector.NumbersKey, collection);
                     changed.Add(single);
-                    waitForUser();
+                    //waitForUser();
                     if (!single.RemoveFromPossiable(vector.Numbers))
                         changed.RemoveAt(changed.Count - 1);
                 }

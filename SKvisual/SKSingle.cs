@@ -67,6 +67,8 @@ namespace SK
       
         public void SetNumber(int num)
         {
+            if(IsNumberSet)
+                throw new Exception("Single " + ToString() + " is soled, cannot set new number");
             Number = num;
             SetPossiableNumbers();
 

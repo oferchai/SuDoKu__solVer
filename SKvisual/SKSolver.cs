@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using SKvisual;
@@ -19,7 +20,7 @@ namespace SK
     }
     public class SKSolver
     {
-        public readonly SKMattrix sk;
+        public SKMattrix sk;
         private readonly Form1 _frm;
 
         public SKSolver(SKMattrix sk, Form1 frm)
@@ -46,28 +47,115 @@ namespace SK
             }
         }
 
+        class BacktraceItem
+        {
+            public SKMattrix Mattrix;
+            public SKSingle Single;
+            public int GuessId;
+        }
         // Solver with a retry algorithm, make arbitrary solutions decisions and continue! 
         // TBD: need to support backtrace functionality
 
             // some more comments
         public void SolveEx()
         {
-            Solve();
+            // create the backtrace stack 
+            var backtrace = new Stack<BacktraceItem>();
             string desc = string.Empty;
-            for (int i = 0; i < 50; i++)
-                if (!sk.IsSolved && sk.ValidateMattrix(ref desc))
+            do
+            {
+                // attempt to solve the puzzle
+                Solve();
+
+                if (sk.IsSolved)
+                    return;
+
+                // if unable to solve the puzzle, is puzzle still valid ?
+                if (sk.ValidateMattrix(ref desc))
                 {
+                    // get the first branch single, and branch
+                    var firstUnsolvedSingle = sk.AllSingles.Where(s => !s.IsNumberSet && s.Possible.Count <= 3).OrderBy(s=>s.Possible.Count).FirstOrDefault();
+                    if (firstUnsolvedSingle == null)
+                    {
+                        Raise(sk.AllSingles.First(), "Cannot branch , no single with 3 or less candidates ");
+                        Wait();
+                        return;
+                    }
+                    Raise(firstUnsolvedSingle, "Branching puzzle, setting this cell to:"
+                                               + firstUnsolvedSingle.Possible.First());
+                    Wait();
 
-                    var firstUnsolvedSingle = sk.AllSingles.Where(s => !s.IsNumberSet && s.Possible.Count==2).First();
-                    Raise(firstUnsolvedSingle, "Puzzle have more than one solution, setting this cell to:"
-                        + firstUnsolvedSingle.Possible.First());
-                    //Wait();
+                    // push branch to stack
+                    backtrace.Push(new BacktraceItem
+                    {
+                        GuessId = 0,
+                        Mattrix = sk.HardCopy(),
+                        Single = firstUnsolvedSingle
+                    });
                     firstUnsolvedSingle.SetNumber(firstUnsolvedSingle.Possible.First());
-                    Solve();
-                }
 
-            if(!sk.ValidateMattrix(ref desc))
-                Raise(sk.AllSingles.First(),desc);
+                }
+                else
+                {
+                    // try backtracing ... 
+                    BacktraceItem backtraceItem = null;
+
+                    do
+                    {
+                        // get top branch from stack
+                        backtraceItem = backtrace.Pop();
+                        // if stack is empty. Abort 
+                        if (backtraceItem == null)
+                        {
+                            Raise(sk.AllSingles.First(), "Puzzel in UNSOLVABLE");
+
+                            Wait();
+                            return;
+                        }
+
+                        if (backtraceItem.Single.Possible.Count() - 1 > backtraceItem.GuessId)
+                        {
+                            sk = backtraceItem.Mattrix;
+                            backtrace.Push(new BacktraceItem
+                            {
+                                GuessId = backtraceItem.GuessId + 1,
+                                Single = backtraceItem.Single,
+                                Mattrix = backtraceItem.Mattrix
+                            });
+                            Raise(backtraceItem.Single, "Backtracing puzzle, setting this cell to:" +
+                                                        backtraceItem.Single.Possible.ElementAt(backtraceItem.GuessId +
+                                                                                                1));
+                            Wait();
+                            backtraceItem.Single.SetNumber(
+                                backtraceItem.Single.Possible.ElementAt(backtraceItem.GuessId + 1));
+                        }
+                        else
+                        {
+                            backtraceItem = null;
+                        }
+                    } while (backtraceItem == null);
+
+
+                }
+            } while (true);
+
+            //}
+            //Solve();
+            //string desc = string.Empty;
+            //for (int i = 0; i < 50; i++)
+            //    if (!sk.IsSolved && sk.ValidateMattrix(ref desc))
+            //    {
+
+            //        var firstUnsolvedSingle = sk.AllSingles.Where(s => !s.IsNumberSet && s.Possible.Count==2).First();
+            //        Raise(firstUnsolvedSingle, "Puzzle have more than one solution, setting this cell to:"
+            //            + firstUnsolvedSingle.Possible.First());
+            //        Wait();
+            //        firstUnsolvedSingle.SetNumber(firstUnsolvedSingle.Possible.First());
+            //        Solve();
+            //    }
+
+            //if(!sk.ValidateMattrix(ref desc))
+            //    Raise(sk.AllSingles.First(),desc);
 
         }
         public void Solve()
