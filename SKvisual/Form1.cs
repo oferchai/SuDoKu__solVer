@@ -25,7 +25,7 @@ namespace SKvisual
 
         public void UpdateMattrix()
         {
-            foreach (var row in _mattrix.Rows)
+            foreach (var row in _solver.sk.Rows)
                 foreach (var s in row.Value)
                 {
                     DGV.Rows[s.RowId].Cells[s.ColId].Style.ForeColor = Color.Blue;
@@ -124,7 +124,7 @@ namespace SKvisual
                 return;
 
             _t = null;
-            int level = (cbLevel.SelectedIndex) + 4;
+            int level = cbLevel.SelectedIndex > 3 ? cbLevel.SelectedIndex + 100 : (cbLevel.SelectedIndex) + 4;
             _mattrix = Program.CreateMattrixRnd(level);
             _solver = new SKSolver(_mattrix, this);
             _solver.Highlight += Highlight;
@@ -164,14 +164,11 @@ namespace SKvisual
                 _t = new Task(() => _solver.SolveEx());
                 _t.Start();
             }
-
+            UpdateMattrix();
             MoveNext.Set();
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
+        
 
         private void ClearP_Click(object sender, EventArgs e)
         {
@@ -212,6 +209,24 @@ namespace SKvisual
                 }
 
             }
+        }
+
+        private void AutoContinue_CheckedChanged(object sender, EventArgs e)
+        {
+           
+
+        }
+
+        public void PushBacktrace(SKSolver.BacktraceItem peek)
+        {
+            if( Backtrace.InvokeRequired)
+                Backtrace.Invoke((MethodInvoker)delegate { Backtrace.Items.Add(peek.ToString()); });
+        }
+
+        public void BacktracePop()
+        {
+            if (Backtrace.InvokeRequired)
+                Backtrace.Invoke((MethodInvoker)delegate { Backtrace.Items.RemoveAt(Backtrace.Items.Count-1); });
         }
     }
 }

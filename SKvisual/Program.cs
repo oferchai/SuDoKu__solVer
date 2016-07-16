@@ -175,7 +175,40 @@ namespace SKvisual
         {
             while (true)
             {
+                if (level == 104)
+                {
+                    return SKCreator.CreatePuzzleFromText(new string[]
+                    {
+                        "9....8..2",
+                        "..1....3.",
+                        ".6.7.....",
+                        ".....2..7",
+                        "..4...9..",
+                        ".8.5...6.",
+                        ".7...9..1",
+                        "..36..5..",
+                        "2...4..8.",
+
+                    });
+                }
+                if (level == 105)
+                {
+                    return SKCreator.CreatePuzzleFromText(new string[]
+                    {
+                        ".....4.1.",
+                        ".5..3...2",
+                        "8..7..6..",
+                        ".........",
+                        ".3......5",
+                        "6..8.....",
+                        "..2.5..7.",
+                        ".9...6..3",
+                        "4..1..8..",
+                    });
+                }
+
                 var puzzle = SKCreator.CreateRandomMattrixShuffle(SKCreator.GenerateSeedMattrix(), (decimal) level);
+                
                 return puzzle;
                 var testPuzzle = puzzle.HardCopy();
                 var solver = new SKSolver(testPuzzle, null);

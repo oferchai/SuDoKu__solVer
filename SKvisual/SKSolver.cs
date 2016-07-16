@@ -47,11 +47,16 @@ namespace SK
             }
         }
 
-        class BacktraceItem
+        public class BacktraceItem
         {
             public SKMattrix Mattrix;
             public SKSingle Single;
             public int GuessId;
+
+            public string ToString()
+            {
+                return Single.ToString() + " Set to " + Single.Possible.ElementAt(GuessId);
+            }
         }
         // Solver with a retry algorithm, make arbitrary solutions decisions and continue! 
         // TBD: need to support backtrace functionality
@@ -85,13 +90,20 @@ namespace SK
                                                + firstUnsolvedSingle.Possible.First());
                     Wait();
 
+                    var newMattrix = sk.HardCopy();
+                    var newSingle =
+                        newMattrix.AllSingles.Where(
+                            s => s.RowId == firstUnsolvedSingle.RowId && s.ColId == firstUnsolvedSingle.ColId).Single();
+
+
                     // push branch to stack
                     backtrace.Push(new BacktraceItem
                     {
                         GuessId = 0,
-                        Mattrix = sk.HardCopy(),
-                        Single = firstUnsolvedSingle
+                        Mattrix = newMattrix,
+                        Single = newSingle
                     });
+                    _frm.PushBacktrace(backtrace.Peek());
                     firstUnsolvedSingle.SetNumber(firstUnsolvedSingle.Possible.First());
 
                 }
@@ -104,6 +116,7 @@ namespace SK
                     {
                         // get top branch from stack
                         backtraceItem = backtrace.Pop();
+                        _frm.BacktracePop();
                         // if stack is empty. Abort 
                         if (backtraceItem == null)
                         {
@@ -116,18 +129,27 @@ namespace SK
                         if (backtraceItem.Single.Possible.Count() - 1 > backtraceItem.GuessId)
                         {
                             sk = backtraceItem.Mattrix;
+                            var newMattrix = sk.HardCopy();
+                            var newSingle =
+                                newMattrix.AllSingles.Where(
+                                    s => s.RowId == backtraceItem.Single.RowId && s.ColId == backtraceItem.Single.ColId).Single();
+
                             backtrace.Push(new BacktraceItem
                             {
                                 GuessId = backtraceItem.GuessId + 1,
-                                Single = backtraceItem.Single,
-                                Mattrix = backtraceItem.Mattrix
+                                Single = newSingle,
+                                Mattrix = newMattrix
                             });
-                            Raise(backtraceItem.Single, "Backtracing puzzle, setting this cell to:" +
-                                                        backtraceItem.Single.Possible.ElementAt(backtraceItem.GuessId +
-                                                                                                1));
+                            _frm.PushBacktrace(backtrace.Peek());
+
+                            Raise(backtraceItem.Single, "BackTracing puzzle, setting this cell to:" +
+                                                        backtraceItem.Single.Possible.ElementAt(backtraceItem.GuessId + 1));
                             Wait();
-                            backtraceItem.Single.SetNumber(
+                            sk.AllSingles.Where(
+                                    s => s.RowId == backtraceItem.Single.RowId && s.ColId == backtraceItem.Single.ColId).Single().SetNumber(
                                 backtraceItem.Single.Possible.ElementAt(backtraceItem.GuessId + 1));
+                            if (!sk.ValidateMattrix(ref desc))
+                                backtraceItem = null;
                         }
                         else
                         {
@@ -202,7 +224,7 @@ namespace SK
 
             } while (!sk.IsSolved && changed);
 
-            if ( !sk.IsSolved)
+            if(!sk.IsSolved)
             {
                 //IsMatrixChanged("UniqueRectabgle",
                 //    SimpleSKAlgo.UniqueRegtangle(sk, RaiseEx, Wait), sk);
@@ -241,7 +263,7 @@ namespace SK
 
         private void Wait()
         {
-            if (_frm != null)
+            if (_frm != null && !_frm.AutoContinue.Checked)
                 _frm.MoveNext.WaitOne();
 
         }

@@ -34,6 +34,8 @@
             this.cbLevel = new System.Windows.Forms.ComboBox();
             this.ClearP = new System.Windows.Forms.Button();
             this.UseUIPuzzle = new System.Windows.Forms.Button();
+            this.AutoContinue = new System.Windows.Forms.CheckBox();
+            this.Backtrace = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // button1
@@ -49,13 +51,15 @@
             // 
             // button2
             // 
+            this.button2.BackColor = System.Drawing.Color.Cyan;
+            this.button2.ForeColor = System.Drawing.SystemColors.ControlText;
             this.button2.Location = new System.Drawing.Point(298, 2);
             this.button2.Margin = new System.Windows.Forms.Padding(4);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(333, 28);
+            this.button2.Size = new System.Drawing.Size(312, 28);
             this.button2.TabIndex = 1;
             this.button2.Text = "Solve!";
-            this.button2.UseVisualStyleBackColor = true;
+            this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // AlgoDesc
@@ -67,7 +71,6 @@
             this.AlgoDesc.Size = new System.Drawing.Size(168, 17);
             this.AlgoDesc.TabIndex = 2;
             this.AlgoDesc.Text = "====================";
-            this.AlgoDesc.Click += new System.EventHandler(this.label1_Click);
             // 
             // cbLevel
             // 
@@ -76,7 +79,9 @@
             "Easy (40)",
             "Medium (50)",
             "Hard (60)",
-            "Impossiable (70)"});
+            "Impossiable (70)",
+            "Puzzel-1 (hard)",
+            "Puzzel-2 (hard)"});
             this.cbLevel.Location = new System.Drawing.Point(12, 2);
             this.cbLevel.Name = "cbLevel";
             this.cbLevel.Size = new System.Drawing.Size(121, 24);
@@ -102,11 +107,32 @@
             this.UseUIPuzzle.UseVisualStyleBackColor = true;
             this.UseUIPuzzle.Click += new System.EventHandler(this.UseUIPuzzle_Click);
             // 
+            // AutoContinue
+            // 
+            this.AutoContinue.AutoSize = true;
+            this.AutoContinue.Location = new System.Drawing.Point(644, 6);
+            this.AutoContinue.Name = "AutoContinue";
+            this.AutoContinue.Size = new System.Drawing.Size(18, 17);
+            this.AutoContinue.TabIndex = 6;
+            this.AutoContinue.UseVisualStyleBackColor = true;
+            this.AutoContinue.CheckedChanged += new System.EventHandler(this.AutoContinue_CheckedChanged);
+            // 
+            // Backtrace
+            // 
+            this.Backtrace.FormattingEnabled = true;
+            this.Backtrace.ItemHeight = 16;
+            this.Backtrace.Location = new System.Drawing.Point(534, 65);
+            this.Backtrace.Name = "Backtrace";
+            this.Backtrace.Size = new System.Drawing.Size(151, 436);
+            this.Backtrace.TabIndex = 7;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(697, 596);
+            this.Controls.Add(this.Backtrace);
+            this.Controls.Add(this.AutoContinue);
             this.Controls.Add(this.UseUIPuzzle);
             this.Controls.Add(this.ClearP);
             this.Controls.Add(this.cbLevel);
@@ -130,6 +156,8 @@
         private System.Windows.Forms.ComboBox cbLevel;
         private System.Windows.Forms.Button ClearP;
         private System.Windows.Forms.Button UseUIPuzzle;
+        public System.Windows.Forms.CheckBox AutoContinue;
+        private System.Windows.Forms.ListBox Backtrace;
     }
 }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SK;
 
@@ -326,6 +327,24 @@ namespace SKvisual
 
 
         }
-        
+
+        public static SKMattrix CreatePuzzleFromText(string[] lines)
+        {
+            List<SKSingle> singles = new List<SKSingle>();
+            int lId = 0;
+            foreach (var l in lines)
+            {
+                int cId = 0;
+                foreach (var c in l)
+                {
+                    if(c!='.')
+                        singles.Add(new SKSingle(lId,cId,c-'0'));
+
+                    cId++;
+                }
+                lId++;
+            }
+            return new SKMattrix(singles);
+        }
     }
 }
