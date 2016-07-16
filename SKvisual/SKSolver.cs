@@ -48,6 +48,8 @@ namespace SK
 
         // Solver with a retry algorithm, make arbitrary solutions decisions and continue! 
         // TBD: need to support backtrace functionality
+
+            // some more comments
         public void SolveEx()
         {
             Solve();
