@@ -51,7 +51,7 @@
             // 
             // button2
             // 
-            this.button2.BackColor = System.Drawing.Color.Cyan;
+            this.button2.BackColor = System.Drawing.Color.DodgerBlue;
             this.button2.ForeColor = System.Drawing.SystemColors.ControlText;
             this.button2.Location = new System.Drawing.Point(298, 2);
             this.button2.Margin = new System.Windows.Forms.Padding(4);
@@ -65,7 +65,7 @@
             // AlgoDesc
             // 
             this.AlgoDesc.AutoSize = true;
-            this.AlgoDesc.Location = new System.Drawing.Point(201, 34);
+            this.AlgoDesc.Location = new System.Drawing.Point(195, 43);
             this.AlgoDesc.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.AlgoDesc.Name = "AlgoDesc";
             this.AlgoDesc.Size = new System.Drawing.Size(168, 17);
@@ -119,11 +119,12 @@
             // 
             // Backtrace
             // 
+            this.Backtrace.BackColor = System.Drawing.SystemColors.Menu;
             this.Backtrace.FormattingEnabled = true;
             this.Backtrace.ItemHeight = 16;
-            this.Backtrace.Location = new System.Drawing.Point(534, 65);
+            this.Backtrace.Location = new System.Drawing.Point(511, 65);
             this.Backtrace.Name = "Backtrace";
-            this.Backtrace.Size = new System.Drawing.Size(151, 436);
+            this.Backtrace.Size = new System.Drawing.Size(151, 420);
             this.Backtrace.TabIndex = 7;
             // 
             // Form1

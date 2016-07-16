@@ -122,7 +122,7 @@ namespace SKvisual
         {
             if (_t != null && !_t.IsCompleted)
                 return;
-
+            Backtrace.Items.Clear();
             _t = null;
             int level = cbLevel.SelectedIndex > 3 ? cbLevel.SelectedIndex + 100 : (cbLevel.SelectedIndex) + 4;
             _mattrix = Program.CreateMattrixRnd(level);
