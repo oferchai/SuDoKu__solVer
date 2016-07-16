@@ -81,76 +81,19 @@ namespace SK
             // test all cubes 
             foreach (var cube in Cubes)
             {
-                var doubleNumbers = cube.Value.Where(c => c.IsNumberSet).GroupBy(s => s.Number.Value).Where(g => g.Count() > 1);
-                if (doubleNumbers.Any())
-                {
-                    result += Environment.NewLine + "Number:" + doubleNumbers.First().Key + " Appear " +
-                              doubleNumbers.First().Count() + "times in cube " + cube.Key;
-                    return false;
-                }
-
-                var numbersDistinct = cube.Value.SelectMany(
-                    s => s.IsNumberSet ? Enumerable.Repeat(s.Number.Value, 1) : s.Possible).Distinct();
-
-                if (numbersDistinct.Count() < 9)
-                {
-                    result += Environment.NewLine + "cube:" + cube.Key + " missing:"
-                    + (9-numbersDistinct.Count()) +
-                    " numbers";
-                    return false;
-
-                }
-
-
+                if (!ValidateVector(ref result, new KeyValuePair<int, SinglesCollection>( cube.Key , cube.Value) ,"cube")) return false;
             }
             // test all rows 
             foreach (var row in Rows)
             {
-                var doubleNumbers = row.Value.Where(c => c.IsNumberSet).GroupBy(s => s.Number.Value).Where(g => g.Count() > 1);
-                if (doubleNumbers.Any())
-                {
-                    result += Environment.NewLine + "Number:" + doubleNumbers.First().Key + " Appear " +
-                              doubleNumbers.First().Count() + "times in row " + row.Key;
-                    return false;
-                }
-
-                var numbersDistinct = row.Value.SelectMany(
-    s => s.IsNumberSet ? Enumerable.Repeat(s.Number.Value, 1) : s.Possible).Distinct();
-
-                if (numbersDistinct.Count() < 9)
-                {
-                    result += Environment.NewLine + "row:" + row.Key + " missing:"
-                    + (9-numbersDistinct.Count()) +
-                    " numbers";
-                    return false;
-
-                }
+                if (!ValidateVector(ref result, new KeyValuePair<int, SinglesCollection>(row.Key, row.Value), "row")) return false;
 
 
             }
             // test all cols 
             foreach (var col in Cols)
             {
-                var doubleNumbers = col.Value.Where(c => c.IsNumberSet).GroupBy(s => s.Number.Value).Where(g => g.Count() > 1);
-                if (doubleNumbers.Any())
-                {
-                    result += Environment.NewLine + "Number:" + doubleNumbers.First().Key + " Appear " +
-                              doubleNumbers.First().Count() + "times in col " + col.Key;
-                    return false;
-                }
-
-                var numbersDistinct = col.Value.SelectMany(
-                    s => s.IsNumberSet ? Enumerable.Repeat(s.Number.Value, 1) : s.Possible).Distinct();
-
-                if (numbersDistinct.Count() < 9)
-                {
-                    result += Environment.NewLine + "col:" + col.Key + " missing:"
-                    + (9-numbersDistinct.Count()) +
-                    " numbers";
-                    return false;
-
-                }
-
+                if (!ValidateVector(ref result, new KeyValuePair<int, SinglesCollection>(col.Key, col.Value), "col")) return false;
 
             }
 
@@ -164,6 +107,29 @@ namespace SK
 
             return true;
 
+        }
+
+        private static bool ValidateVector(ref string result, KeyValuePair<int, SinglesCollection> vector, string description)
+        {
+            var doubleNumbers = vector.Value.Where(c => c.IsNumberSet).GroupBy(s => s.Number.Value).Where(g => g.Count() > 1);
+            if (doubleNumbers.Any())
+            {
+                result += Environment.NewLine + "Number:" + doubleNumbers.First().Key + " Appear " +
+                          doubleNumbers.First().Count() + "times in "+description + " " + vector.Key;
+                return false;
+            }
+
+            var numbersDistinct = vector.Value.SelectMany(
+                s => s.IsNumberSet ? Enumerable.Repeat(s.Number.Value, 1) : s.Possible).Distinct();
+
+            if (numbersDistinct.Count() < 9)
+            {
+                result += Environment.NewLine + description+":" + vector.Key + " missing:"
+                          + (9 - numbersDistinct.Count()) +
+                          " numbers";
+                return false;
+            }
+            return true;
         }
     }
 }
