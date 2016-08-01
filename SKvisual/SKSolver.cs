@@ -103,7 +103,7 @@ namespace SK
                         Mattrix = newMattrix,
                         Single = newSingle
                     });
-                    _frm.PushBacktrace(backtrace.Peek());
+                    if(_frm!=null) _frm.PushBacktrace(backtrace.Peek());
                     firstUnsolvedSingle.SetNumber(firstUnsolvedSingle.Possible.First());
 
                 }
@@ -116,7 +116,7 @@ namespace SK
                     {
                         // get top branch from stack
                         backtraceItem = backtrace.Pop();
-                        _frm.BacktracePop();
+                        if (_frm != null)  _frm.BacktracePop();
                         // if stack is empty. Abort 
                         if (backtraceItem == null)
                         {
@@ -140,7 +140,7 @@ namespace SK
                                 Single = newSingle,
                                 Mattrix = newMattrix
                             });
-                            _frm.PushBacktrace(backtrace.Peek());
+                            if (_frm != null)  _frm.PushBacktrace(backtrace.Peek());
 
                             Raise(backtraceItem.Single, "BackTracing puzzle, setting this cell to:" +
                                                         backtraceItem.Single.Possible.ElementAt(backtraceItem.GuessId + 1));
