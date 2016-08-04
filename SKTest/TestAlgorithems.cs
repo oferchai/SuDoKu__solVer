@@ -33,7 +33,32 @@ namespace SKTest
             res.First().Number.Should().Be(9);
 
         }
-   
+
+        [Test]
+        public void TestSwordfish()
+        {
+            var sk = SKCreator.CreatePuzzleFromText(new string[]
+                    {
+                        ".2..43.69",
+                        "..38962..",
+                        "96..25.3.",
+                    //-----------------
+                        "89.56..13",
+                        "6...3....",
+                        ".3..81.26",
+                    //-----------------
+                        "3...1..7.",
+                        "..96743.2",
+                        "27.358.9.",
+
+                    });
+
+            var res = AdvanceSKAlgo.SwordfishAlgo(sk, (s, str,collection) => { }, () => { });
+            res.Count().Should().Be(9);
+            res.Select(s => s.ColId).Distinct().Count().Should().Be(3);
+
+        }
+
         [Test]
         public void TestPuzzeleSolver()
         {
