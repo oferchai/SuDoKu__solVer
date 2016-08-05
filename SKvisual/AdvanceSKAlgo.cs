@@ -1,59 +1,95 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SK;
 
 namespace SKvisual
 {
     public static class AdvanceSKAlgo
     {
-        public static IEnumerable<SKSingle> SwordfishAlgo(SKMattrix mattrix, Action<SKSingle, string, IEnumerable<SKSingle>> highlight,
+
+        public static IEnumerable<SKSingle> SwordfishAlgo(SKMattrix mattrix,
+            Action<SKSingle, string, IEnumerable<SKSingle>> highlight,
             Action waitForUser)
         {
+            var changesRow =  XWingPatternEx(mattrix.Rows.Values,mattrix.Cols.Values ,3,(s)=>s.ColId,highlight,waitForUser,"Swordfish on rows");
+            var changesCol =  XWingPatternEx(mattrix.Cols.Values,mattrix.Rows.Values ,3,(s)=>s.RowId,highlight,waitForUser,"Swordfish on cols");
+            return Enumerable.Concat(changesCol, changesRow);
+        }
+
+        public static IEnumerable<SKSingle> XWingAlgo(SKMattrix mattrix,
+            Action<SKSingle, string, IEnumerable<SKSingle>> highlight,
+            Action waitForUser)
+        {
+            var changesRow = XWingPatternEx(mattrix.Rows.Values, mattrix.Cols.Values, 2, (s) => s.ColId, highlight, waitForUser, "Swordfish on rows");
+            var changesCol = XWingPatternEx(mattrix.Cols.Values, mattrix.Rows.Values, 2, (s) => s.RowId, highlight, waitForUser, "Swordfish on cols");
+            return Enumerable.Concat(changesCol, changesRow);
+        }
+
+
+        private static IEnumerable<SKSingle> XWingPatternEx(IEnumerable<SinglesCollection> testVectors, IEnumerable<SinglesCollection> effectedVectors , int VectorSize, Func<SKSingle,int> getSingleLocation ,Action<SKSingle, string, IEnumerable<SKSingle>> highlight,
+            Action waitForUser, string algoDescription)
+        {
+            // VectorSize 3 i Swordfisj algo. size 2 in X-Wing pattern 
+            
+
             List<SKSingle> changed = new List<SKSingle>();
-            // STEP 1: get all numbers , with that apears 'vectorLen' time in the collection
 
-
+            
             foreach (int num in SKMattrix.AllNumbers)
             {
-                var candidates = mattrix.Rows.Select(r => r.Value as SinglesCollection).Select(r =>
+                // STEP 1: get all locations of num in the collections , that apear max VectorSize time 
+                var rawCandidates = testVectors.Select(r =>
                     new
                     {
                         Num = num,
                         Singles = r.Where(s => !s.IsNumberSet && s.Possible.Contains(num)),
                         Locations =
                             r.Where(s => !s.IsNumberSet && s.Possible.Contains(num))
-                                .Aggregate(string.Empty, (c, n) => c + "," + n.ColId)
+                                .Aggregate(string.Empty, (c, n) => c + "," + getSingleLocation(n))
                     })
-                    .Where(n => !string.IsNullOrEmpty(n.Locations) && n.Singles.Count() >= 2 && n.Singles.Count() <= 3)
+                    .Where(n => !string.IsNullOrEmpty(n.Locations) && n.Singles.Count() >= 2 && n.Singles.Count() <= VectorSize)
                     .ToList();
 
-                var swordFishSingles = candidates.SelectMany(c => c.Singles);
-                var swordfishColIdList = swordFishSingles.Select(c => c.ColId).Distinct();
-                if (swordfishColIdList.Count() == 3)
+                var candidatesPowerSet = SimpleSKAlgo.GetPowerSet(rawCandidates).Where(set => set.Count() == VectorSize);
+                foreach (var candidateSet in candidatesPowerSet)
                 {
-                    //bingo! now remove 'num' from cells not in swordfish pattern
-                    foreach (var colId in swordfishColIdList)
+                    // STEP 2: Get all unique Col for canindates vector
+                    var swordFishSingles = candidateSet.SelectMany(c => c.Singles);
+                    var swordfishColIdList = swordFishSingles.Select(c => getSingleLocation(c)).Distinct();
+
+                    // if it apears in exactly 3 unique cols, we have a possiable algo affect on the puzzle
+                    if (swordfishColIdList.Count() == VectorSize)
                     {
-                        var wordfishSinglesInCol = swordFishSingles.Where(s => s.ColId == colId);
-
-                        foreach (var single in mattrix.Cols[colId].Where(s => !s.IsNumberSet).Except(wordfishSinglesInCol))
+                        //bingo! now remove 'num' from cells not in swordfish pattern
+                        foreach (var colId in swordfishColIdList)
                         {
-                            highlight(single, "Swordfish on " + num , swordFishSingles);
-                            changed.Add(single);
-                            waitForUser();
-                            if (!single.RemoveFromPossiable(Enumerable.Repeat(num, 1)))
-                                changed.RemoveAt(changed.Count - 1);
-                        }
+                            var wordfishSinglesInCol = swordFishSingles.Where(s => getSingleLocation(s) == colId);
 
+                            foreach (
+                                var single in
+                                    effectedVectors.ElementAt(colId)
+                                        .Where(s => !s.IsNumberSet)
+                                        .Except(wordfishSinglesInCol))
+                            {
+
+                                if (single.RemoveFromPossiable(Enumerable.Repeat(num, 1)))
+                                {
+                                    highlight(single, algoDescription + " on " + num, swordFishSingles);
+                                    changed.Add(single);
+                                    waitForUser();
+                                }
+                                //else
+                                //    changed.RemoveAt(changed.Count - 1);
+                            }
+
+                        }
                     }
                 }
             }
 
 
-            //}
+            
 
 
                 

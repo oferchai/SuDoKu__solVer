@@ -211,6 +211,11 @@ namespace SK
                 changed |= IsMatrixChanged("NakedPairInCube",
                     SimpleSKAlgo.HiddenVectorInCube(sk, RaiseEx, NoWait), sk);
 
+                changed |= IsMatrixChanged("SwordfishAlgo",
+                                    AdvanceSKAlgo.SwordfishAlgo(sk, RaiseEx, Wait), sk);
+
+                changed |= NoBrainer(changed);
+
 
 
 

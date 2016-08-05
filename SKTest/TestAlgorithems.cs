@@ -35,7 +35,7 @@ namespace SKTest
         }
 
         [Test]
-        public void TestSwordfish()
+        public void TestSwordfishRow()
         {
             var sk = SKCreator.CreatePuzzleFromText(new string[]
                     {
@@ -56,6 +56,50 @@ namespace SKTest
             var res = AdvanceSKAlgo.SwordfishAlgo(sk, (s, str,collection) => { }, () => { });
             res.Count().Should().Be(9);
             res.Select(s => s.ColId).Distinct().Count().Should().Be(3);
+
+        }
+        [Test]
+        public void TestSwordfishCol()
+        {
+            var sk = SKCreator.CreatePuzzleFromText(new string[]
+                    {
+                        "52941.7.3",
+                        "..6..3..2",
+                        "..32.....",
+                    //-----------------
+                        ".523...76",
+                        "637.5.2..",
+                        "19.62753.",
+                    //-----------------
+                        "3...6942.",
+                        "2..83.6..",
+                        "96.7423.5",
+                                                "",
+                    });
+
+            var res = AdvanceSKAlgo.SwordfishAlgo(sk, (s, str, collection) => { }, () => { });
+            res.Count().Should().Be(7);
+            res.Select(s => s.RowId).Distinct().Count().Should().Be(3);
+
+            sk = SKCreator.CreatePuzzleFromText(new string[]
+                    {
+                        "926...1..",
+                        "537.1.42.",
+                        "841...6.3",
+                    //-----------------
+                        "259734816",
+                        "714.6..3.",
+                        "36812..4.",
+                    //-----------------
+                        "1.2....84",
+                        "485.7136.",
+                        "6.3.....1",
+                    });
+            res = AdvanceSKAlgo.SwordfishAlgo(sk, (s, str, collection) => { }, () => { });
+            res.Count().Should().Be(7);
+            res.Select(s => s.RowId).Distinct().Count().Should().Be(3);
+
+
 
         }
 
