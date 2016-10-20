@@ -3,10 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Serialization;
 using SK;
 
 namespace SKvisual
@@ -163,12 +166,57 @@ namespace SKvisual
             {
                 _t = new Task(() => _solver.SolveEx());
                 _t.Start();
+                UpdateStats(1);
             }
             UpdateMattrix();
             MoveNext.Set();
+            UpdateStats(0);
+
+
+
         }
 
-        
+
+        [Serializable]
+        public class SudukoStats
+        {
+            public int SudukoSolved { get; set; }
+
+        }
+
+        private void UpdateStats(int increment )
+        {
+            SudukoStats st = new SudukoStats();
+            XmlSerializer xsSubmit = new XmlSerializer(typeof(SudukoStats));
+            try
+            {
+                using
+                    (FileStream fs = new FileStream("stats.xml", FileMode.OpenOrCreate))
+                {
+                    XmlReader reader = XmlReader.Create(fs);
+                    st = (SudukoStats)xsSubmit.Deserialize(reader);
+                }
+            }
+            catch (Exception e)
+            { st = new SudukoStats(); }
+
+            st.SudukoSolved+=increment;
+
+            using (var stringWriter = new FileStream("stats.xml", FileMode.OpenOrCreate))
+            {
+                using (var writer = XmlWriter.Create(stringWriter))
+                {
+                    xsSubmit.Serialize(writer, st);                    
+                }
+            }
+
+
+            this.StatsBox.Text = " Jeg har løst " + st.SudukoSolved + " ....  Suduko's JO HO :-) Hilsen Dani og Abba";
+
+
+
+        }
+
 
         private void ClearP_Click(object sender, EventArgs e)
         {
@@ -213,20 +261,20 @@ namespace SKvisual
 
         private void AutoContinue_CheckedChanged(object sender, EventArgs e)
         {
-           
+
 
         }
 
         public void PushBacktrace(SKSolver.BacktraceItem peek)
         {
-            if( Backtrace.InvokeRequired)
+            if (Backtrace.InvokeRequired)
                 Backtrace.Invoke((MethodInvoker)delegate { Backtrace.Items.Add(peek.ToString()); });
         }
 
         public void BacktracePop()
         {
             if (Backtrace.InvokeRequired)
-                Backtrace.Invoke((MethodInvoker)delegate { Backtrace.Items.RemoveAt(Backtrace.Items.Count-1); });
+                Backtrace.Invoke((MethodInvoker)delegate { Backtrace.Items.RemoveAt(Backtrace.Items.Count - 1); });
         }
     }
 }

@@ -12,7 +12,7 @@ namespace SK
             foreach (var s in mattrix.AllSingles.Where(s => !s.IsNumberSet && s.Possible.Count == 1))
             {
 
-                highlight(s, "SinglePossiableNum:" + s.Number);
+                //highlight(s, "SinglePossiableNum:" + s.Number);
                 changed.Add(s);
                 waitForUser();
                 s.SetNumber(s.Possible[0]);
@@ -33,7 +33,7 @@ namespace SK
                     {
                         var s = singles.First();
 
-                        highlight(s, "SingleNumInCube:" + num);
+                        //highlight(s, "SingleNumInCube:" + num);
                         changed.Add(s);
                         waitForUser();
                         s.SetNumber(num);
@@ -58,7 +58,7 @@ namespace SK
                     {
                         var s = singles.First();
 
-                        highlight(s, "SingleNumInRow:" + num);
+                        //highlight(s, "SingleNumInRow:" + num);
                         changed.Add(s);
                         waitForUser();
                         s.SetNumber(num);
@@ -115,7 +115,7 @@ namespace SK
 
             foreach (var vector in v2)
             {
-                highlight(vector.JoinSingles.First(), funcDescription + ":" + vector.NumbersKey, collection);
+                //highlight(vector.JoinSingles.First(), funcDescription + ":" + vector.NumbersKey, collection);
                 waitForUser();
 
                 foreach (var single in vector.JoinSingles)
@@ -189,32 +189,7 @@ namespace SK
         }
         #endregion
 
-        public static IEnumerable<SKSingle> UniqueRegtangle(SKMattrix mattrix, Action<SKSingle, string, IEnumerable<SKSingle>> highlight, Action waitForUser)
-        {
-            // in cols
-            var c1 = mattrix.Cols.SelectMany(c => LocatePairs(c.Value)).GroupBy(n => n.NumbersKey);
-            var c2 = c1.Where(g=>g.Count()==2 && g.First().CreateRowsKey() == g.ElementAt(1).CreateRowsKey() );
-            foreach (var c3 in c2)
-            {
-                var collection = c3.SelectMany(c4 => c4.JoinSingles);
-                string text = "Unique rectabgle on:" + c3.Key;
-                highlight(collection.First(), text, collection);
-                waitForUser();
-            }
-
-            // in cols
-            var r1 = mattrix.Rows.SelectMany(c => LocatePairs(c.Value)).GroupBy(n => n.NumbersKey);
-            var r2 = c1.Where(g => g.Count() == 2 && g.First().CreateRowsKey() == g.ElementAt(1).CreateColsKey());
-            foreach (var r3 in r2)
-            {
-                var collection = r3.SelectMany(c4 => c4.JoinSingles);
-                string text = "Unique rectabgle on:" + r3.Key;
-                highlight(collection.First(), text, collection);
-                waitForUser();
-            }
-
-            return Enumerable.Empty<SKSingle>();
-        }
+       
 
         public struct HiddenPairs
         {
@@ -233,41 +208,44 @@ namespace SK
 
         }
 
-        private static IEnumerable<HiddenPairs> LocatePairs(SinglesCollection collection)
+        public static IEnumerable<SKSingle> BoxLineReduction(SKMattrix mattrix,
+            Action<SKSingle, string, IEnumerable<SKSingle>> highlight, Action waitForUser)
         {
-            if (collection.UnresolvedSinglesCount < 2)
-                return Enumerable.Repeat(default(HiddenPairs), 0);
-
-            var hiddenVectorCandidates = SKMattrix.AllNumbers.Select(num =>
-            {
-                return
-                    new
-                    {
-                        Num = num,
-                        Singles = collection.Where(s => !s.IsNumberSet && s.Possible.Contains(num) && s.Possible.Count > 1),
-                        Locations =
-                            collection.Where(s => !s.IsNumberSet && s.Possible.Contains(num))
-                                .Aggregate(string.Empty, (c, n) => c + "," + n.RowId)
-                    };
-                //}).Where(num => num.Singles.Any()).ToList();
-            }).Where(num => !string.IsNullOrEmpty(num.Locations)).ToList();
-
-            var vectors = GetPowerSet(hiddenVectorCandidates).Where(set => set.Count() == 2);
-
-            var v1 = vectors.Select(v =>
-            {
-                return new HiddenPairs
-                {
-                    JoinSingles = v.SelectMany(n => n.Singles).Distinct(),
-                    Numbers = v.Select(n => n.Num),
-                    NumbersKey = v.Select(n => n.Num).Aggregate(string.Empty, (c, n) => c + "," + n)
-
-                };
-            }).ToList();
-
-            var v2 = v1.Where(v => v.JoinSingles.Count() == 2 && v.JoinSingles.Select(s => s.CubeId).Distinct().Count() == 2);
-            return v2;
+            List<SKSingle> changes = new List<SKSingle>();
+            foreach(var r in mattrix.Rows.Values)
+                changes.AddRange(BoxLineReductionInCollection(r,mattrix.Cubes,highlight,waitForUser));
+            foreach (var r in mattrix.Cols.Values)
+                changes.AddRange(BoxLineReductionInCollection(r, mattrix.Cubes, highlight, waitForUser));
+            return changes;
         }
+
+        private static IEnumerable<SKSingle> BoxLineReductionInCollection(SinglesCollection vector, Dictionary<int,SKCube> cubes,
+            Action<SKSingle, string, IEnumerable<SKSingle>> highlight, Action waitForUser )
+        {
+            List<SKSingle> changes = new List<SKSingle>();
+
+            foreach (int num in SKMattrix.AllNumbers)
+            {
+                var allNumsInvectorGroup =
+                    vector.Where(s => !s.IsNumberSet & s.Possible.Contains(num)).GroupBy(s => s.CubeId);
+                if (allNumsInvectorGroup.Count() == 1)
+                {
+                    // remove num from all other singles in cube
+                    foreach (var single in cubes[allNumsInvectorGroup.First().Key].Except(allNumsInvectorGroup.First()))
+                    {
+                        //highlight(single, funcDescription + ":" + vector.NumbersKey, collection);
+                        //waitForUser();
+                        if (single.RemoveFromPossiable(Enumerable.Range(num,1)))
+                            changes.Add(single);
+
+                    }
+                }
+            }
+
+            return changes;
+        }
+
+
 
         public static IEnumerable<IEnumerable<T>> GetPowerSet<T>(List<T> list)
         {

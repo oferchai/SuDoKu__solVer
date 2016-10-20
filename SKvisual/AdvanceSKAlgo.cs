@@ -21,8 +21,8 @@ namespace SKvisual
             Action<SKSingle, string, IEnumerable<SKSingle>> highlight,
             Action waitForUser)
         {
-            var changesRow = XWingPatternEx(mattrix.Rows.Values, mattrix.Cols.Values, 2, (s) => s.ColId, highlight, waitForUser, "Swordfish on rows");
-            var changesCol = XWingPatternEx(mattrix.Cols.Values, mattrix.Rows.Values, 2, (s) => s.RowId, highlight, waitForUser, "Swordfish on cols");
+            var changesRow = XWingPatternEx(mattrix.Rows.Values, mattrix.Cols.Values, 2, (s) => s.ColId, highlight, waitForUser, "XWing on rows");
+            var changesCol = XWingPatternEx(mattrix.Cols.Values, mattrix.Rows.Values, 2, (s) => s.RowId, highlight, waitForUser, "XWing on cols");
             return Enumerable.Concat(changesCol, changesRow);
         }
 
@@ -75,7 +75,7 @@ namespace SKvisual
 
                                 if (single.RemoveFromPossiable(Enumerable.Repeat(num, 1)))
                                 {
-                                    highlight(single, algoDescription + " on " + num, swordFishSingles);
+                                    highlight(single, algoDescription + " on " + num , swordFishSingles);
                                     changed.Add(single);
                                     waitForUser();
                                 }
@@ -96,6 +96,68 @@ namespace SKvisual
 
 
                 return changed;
+        }
+
+        private static IEnumerable<SimpleSKAlgo.HiddenPairs> LocatePairs(SinglesCollection collection)
+        {
+            if (collection.UnresolvedSinglesCount < 2)
+                return Enumerable.Repeat(default(SimpleSKAlgo.HiddenPairs), 0);
+
+            var hiddenVectorCandidates = SKMattrix.AllNumbers.Select(num =>
+            {
+                return
+                    new
+                    {
+                        Num = num,
+                        Singles = collection.Where(s => !s.IsNumberSet && s.Possible.Contains(num) && s.Possible.Count > 1),
+                        Locations =
+                            collection.Where(s => !s.IsNumberSet && s.Possible.Contains(num))
+                                .Aggregate(string.Empty, (c, n) => c + "," + n.RowId)
+                    };
+                //}).Where(num => num.Singles.Any()).ToList();
+            }).Where(num => !string.IsNullOrEmpty(num.Locations)).ToList();
+
+            var vectors = SimpleSKAlgo.GetPowerSet(hiddenVectorCandidates).Where(set => set.Count() == 2);
+
+            var v1 = vectors.Select(v =>
+            {
+                return new SimpleSKAlgo.HiddenPairs
+                {
+                    JoinSingles = v.SelectMany(n => n.Singles).Distinct(),
+                    Numbers = v.Select(n => n.Num),
+                    NumbersKey = v.Select(n => n.Num).Aggregate(string.Empty, (c, n) => c + "," + n)
+
+                };
+            }).ToList();
+
+            var v2 = v1.Where(v => v.JoinSingles.Count() == 2 && v.JoinSingles.Select(s => s.CubeId).Distinct().Count() == 2);
+            return v2;
+        }
+        public static IEnumerable<SKSingle> UniqueRegtangle(SKMattrix mattrix, Action<SKSingle, string, IEnumerable<SKSingle>> highlight, Action waitForUser)
+        {
+            // in cols
+            var c1 = mattrix.Cols.SelectMany(c => LocatePairs(c.Value)).GroupBy(n => n.NumbersKey);
+            var c2 = c1.Where(g => g.Count() == 2 && g.First().CreateRowsKey() == g.ElementAt(1).CreateRowsKey());
+            foreach (var c3 in c2)
+            {
+                var collection = c3.SelectMany(c4 => c4.JoinSingles);
+                string text = "Unique rectabgle on:" + c3.Key;
+                highlight(collection.First(), text, collection);
+                waitForUser();
+            }
+
+            // in cols
+            var r1 = mattrix.Rows.SelectMany(c => LocatePairs(c.Value)).GroupBy(n => n.NumbersKey);
+            var r2 = c1.Where(g => g.Count() == 2 && g.First().CreateRowsKey() == g.ElementAt(1).CreateColsKey());
+            foreach (var r3 in r2)
+            {
+                var collection = r3.SelectMany(c4 => c4.JoinSingles);
+                string text = "Unique rectabgle on:" + r3.Key;
+                highlight(collection.First(), text, collection);
+                waitForUser();
+            }
+
+            return Enumerable.Empty<SKSingle>();
         }
     }
 }

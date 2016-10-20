@@ -195,7 +195,7 @@ namespace SK
 
 
                 changed |= IsMatrixChanged("UniqueRectabgle",
-                    SimpleSKAlgo.UniqueRegtangle(sk, RaiseEx, NoWait), sk);
+                    AdvanceSKAlgo.UniqueRegtangle(sk, RaiseEx, NoWait), sk);
 
 
                 changed |= IsMatrixChanged("HiddenVectorInCol",
@@ -212,7 +212,11 @@ namespace SK
                     SimpleSKAlgo.HiddenVectorInCube(sk, RaiseEx, NoWait), sk);
 
                 changed |= IsMatrixChanged("SwordfishAlgo",
-                                    AdvanceSKAlgo.SwordfishAlgo(sk, RaiseEx, Wait), sk);
+                    AdvanceSKAlgo.SwordfishAlgo(sk, RaiseEx, Wait), sk);
+
+
+                changed |= IsMatrixChanged("XWngPattern",
+                                    AdvanceSKAlgo.XWingAlgo(sk, RaiseEx, Wait), sk);
 
                 changed |= NoBrainer(changed);
 
@@ -258,10 +262,12 @@ namespace SK
             return changed;
         }
 
-        private static bool IsMatrixChanged(string algoName, IEnumerable<SKSingle> changedSingles, SKMattrix sk)
+        private bool IsMatrixChanged(string algoName, IEnumerable<SKSingle> changedSingles, SKMattrix sk)
         {
             bool mattrixChanged = changedSingles.Count() > 0;
 
+            if(mattrixChanged)
+                RaiseEx(changedSingles.First(), algoName, changedSingles);
 
             return mattrixChanged;
         }
