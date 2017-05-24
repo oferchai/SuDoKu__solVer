@@ -362,9 +362,9 @@
                                     }
                                 }
                             </style>
-                            <style>.feature-toggle { display: none; }</style>
+                            <style>.row { display: none !important; }</style><!--%OPTIONALCSS%-->
                         </head>
-                        <body class='single'>    
+                        <body>    
                             <div class='header'>
                                 <nav>
                                     <ul id='slide-out' class='side-nav fixed'>
@@ -384,7 +384,11 @@
                             </div>
                             <div class='main'>
                                 <div class='main-wrap'>
-                                    <!--%NOTESTSMESSAGE%-->
+                                    <div class='no-tests-available'>
+                            <div role='alert' class='alert alert-danger'>
+                                <strong>No tests!</strong>  There were no tests found for TestResult.xml.
+                            </div>
+                        </div>
                                     <div class='row dashboard'>
                                         <div class='col s12 m6 l4'>
                                             <div class='card-panel'>
@@ -454,94 +458,7 @@
                                     </div>
                                     <div class='row'>
                                         <div class='fixtures'>
-                                            <div class='col s4'>
-                            <div class='card-panel'>
-                                <div class='fixture-head'>
-                                    <span class='fixture-name'>SK_CreateRandomTest</span>
-                                    <span class='fixture-result passed'>passed</span>
-                                </div>
-                                <div class='fixture-content'>
-                                    <div class='card fixture-status-message'>
-                                        <div class='card-content'>
-                                            One or more child tests had errors
-                                        </div>
-                                    </div>
-                                    <table class='bordered'>
-                                        <tr>
-                                            <th>TestName</th>
-                                            <th>Status</th>
-                                        </tr>
-                                        <tr>
-                            <td class='test-name'>GenerateSKTest</td>
-                            <td class='passed'>passed</td>
-                            <td class='test-features '></td>
-                        </tr>
-                        
-                                    </table>
-                                </div>
-                                <div  class='fixture-footer'>
-                                    <span  alt='Fixture started at time' title='Fixture started at time' class='startedAt'><i class='mdi-device-access-time'></i>2017-05-24 11:12:52</span>
-                                    <span  alt='Fixture ended at time' title='Fixture ended at time' class='endedAt'><i class='mdi-device-access-time'></i>2017-05-24 11:12:52</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='col s4'>
-                            <div class='card-panel'>
-                                <div class='fixture-head'>
-                                    <span class='fixture-name'>TestAlgorithems</span>
-                                    <span class='fixture-result failed'>failed</span>
-                                </div>
-                                <div class='fixture-content'>
-                                    <div class='card fixture-status-message'>
-                                        <div class='card-content'>
-                                            One or more child tests had errors
-                                        </div>
-                                    </div>
-                                    <table class='bordered'>
-                                        <tr>
-                                            <th>TestName</th>
-                                            <th>Status</th>
-                                        </tr>
-                                        <tr>
-                            <td class='test-name'>BoxLineReductionTest</td>
-                            <td class='failed'>failed<pre>Expected value to be 13, but found 10. -> at FluentAssertions.Execution.LateBoundTestFramework.Throw(String message) in C:\projects\fluentassertions-vf06b\Src\Shared\Execution\LateBoundTestFramework.cs:line 31at FluentAssertions.Execution.AssertionScope.FailWith(String message, Object[] args) in C:\projects\fluentassertions-vf06b\Src\Core\Execution\AssertionScope.cs:line 197at FluentAssertions.Numeric.NumericAssertions`1.Be(T expected, String because, Object[] becauseArgs) in C:\projects\fluentassertions-vf06b\Src\Core\Numeric\NumericAssertions.cs:line 49at SKTest.TestAlgorithems.BoxLineReductionTest() in C:\Program Files (x86)\Jenkins\workspace\freestyle\SKTest\TestAlgorithems.cs:line 198</pre></td>
-                            <td class='test-features '></td>
-                        </tr>
-                        <tr>
-                            <td class='test-name'>TestPuzzeleSolver</td>
-                            <td class='passed'>passed</td>
-                            <td class='test-features '></td>
-                        </tr>
-                        <tr>
-                            <td class='test-name'>TestSinglePossiableNumber</td>
-                            <td class='passed'>passed</td>
-                            <td class='test-features '></td>
-                        </tr>
-                        <tr>
-                            <td class='test-name'>TestSwordfishCol</td>
-                            <td class='passed'>passed</td>
-                            <td class='test-features '></td>
-                        </tr>
-                        <tr>
-                            <td class='test-name'>TestSwordfishRow</td>
-                            <td class='failed'>failed<pre>Expected value to be 9, but found 11. -> at FluentAssertions.Execution.LateBoundTestFramework.Throw(String message) in C:\projects\fluentassertions-vf06b\Src\Shared\Execution\LateBoundTestFramework.cs:line 31at FluentAssertions.Execution.AssertionScope.FailWith(String message, Object[] args) in C:\projects\fluentassertions-vf06b\Src\Core\Execution\AssertionScope.cs:line 197at FluentAssertions.Numeric.NumericAssertions`1.Be(T expected, String because, Object[] becauseArgs) in C:\projects\fluentassertions-vf06b\Src\Core\Numeric\NumericAssertions.cs:line 49at SKTest.TestAlgorithems.TestSwordfishRow() in C:\Program Files (x86)\Jenkins\workspace\freestyle\SKTest\TestAlgorithems.cs:line 58</pre></td>
-                            <td class='test-features '></td>
-                        </tr>
-                        <tr>
-                            <td class='test-name'>TestXWingAlgo</td>
-                            <td class='passed'>passed</td>
-                            <td class='test-features '></td>
-                        </tr>
-                        <!--%INSERTTEST%-->
-                                    </table>
-                                </div>
-                                <div  class='fixture-footer'>
-                                    <span  alt='Fixture started at time' title='Fixture started at time' class='startedAt'><i class='mdi-device-access-time'></i>2017-05-24 11:12:52</span>
-                                    <span  alt='Fixture ended at time' title='Fixture ended at time' class='endedAt'><i class='mdi-device-access-time'></i>2017-05-24 11:12:59</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!--%INSERTFIXTURE%-->
+                                            <!--%INSERTFIXTURE%-->
                                         </div>
                                     </div>
                                 </div>
@@ -551,38 +468,18 @@
                                     <h4><!--%FILENAME%--> RunInfo</h4>
                                     <table class='bordered'>
                                         <tr><th>Param</th><th>Value</th></tr>
-                                        <tr>
-                            <td>TestResult File</td><td>TestResult.xml</td>
-                        </tr><tr>
-                            <td>Last Run</td><td>24 maj 2017 13:12</td>
-                        </tr><tr>
-                            <td>Duration</td><td>6889759 ms</td>
-                        </tr><tr>
-                            <td>User</td><td>SYSTEM</td>
-                        </tr><tr>
-                            <td>User Domain</td><td>AD-ONE</td>
-                        </tr><tr>
-                            <td>Machine Name</td><td>DKOHAI01</td>
-                        </tr><tr>
-                            <td>Platform</td><td>Win32NT</td>
-                        </tr><tr>
-                            <td>Os Version</td><td>Microsoft Windows NT 6.1.7601 Service Pack 1</td>
-                        </tr><tr>
-                            <td>Clr Version</td><td>4.0.30319.42000</td>
-                        </tr><tr>
-                            <td>TestRunner</td><td>NUnit</td>
-                        </tr><!--%RUNINFO%-->
+                                        <!--%RUNINFO%-->
                                     </table>
                                 </div>
                                 <div class='modal-footer'>
                                     <a href='#!' class='modal-action modal-close waves-effect waves-green btn-flat'>Close</a>
                                 </div>
-                                <div class='hidden total-tests'>7</div>
-                                <div class='hidden total-passed'>5</div>
-                                <div class='hidden total-failed'>2</div>
-                                <div class='hidden total-inconclusive'>0</div>
-                                <div class='hidden total-errors'>0</div>
-                                <div class='hidden total-skipped'>0</div>
+                                <div class='hidden total-tests'><!--%TOTALTESTS%--></div>
+                                <div class='hidden total-passed'><!--%PASSED%--></div>
+                                <div class='hidden total-failed'><!--%FAILED%--></div>
+                                <div class='hidden total-inconclusive'><!--%INCONCLUSIVE%--></div>
+                                <div class='hidden total-errors'><!--%ERRORS%--></div>
+                                <div class='hidden total-skipped'><!--%SKIPPED%--></div>
                             </div>
                             <div id='modal2' class='modal'>
                                 <div class='modal-content'>
