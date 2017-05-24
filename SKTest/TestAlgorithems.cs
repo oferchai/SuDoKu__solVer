@@ -15,7 +15,7 @@ namespace SKTest
         {
             var sk =  SKCreator.CreatePuzzleFromText(new string[]
                     {
-                        "9....8..2",
+                        "9....8..2",   
                         "..1....3.",
                         ".6.7.....",
                     //-----------------
